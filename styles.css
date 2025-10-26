@@ -1,0 +1,39 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f7f7f7;
+}
+
+h2 {
+  background-color: #222;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+button {
+  margin: 2px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+
+button.P { background: green; }
+button.A { background: red; }
+button.T { background: orange; }
+button.RA { background: pink; color: black; }
+button.AP { background: purple; }
