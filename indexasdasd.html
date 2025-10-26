@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Proyecto Informático - 4°3 Computación</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>TP Octubre | Lista de asistencia</h2>
+
+  <div class="controls">
+    <select class="cursos" name="curso" onchange="cargarMaterias(event)">
+      <option value="">Seleccionar curso</option>
+      <option value="4°3">4°3 Computación</option>
+    </select>
+
+    <select id="materias" name="materia" onchange="cargarLista(event)">
+      <option value="">Seleccionar materia</option>
+      <option value="Proyecto Informático">Proyecto Informático</option>
+      <option value="Algoritmos">Programación</option>
+      <option value="Base de datos">Sistemas</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>apellido</th>
+        <th>nombre</th>
+        <th>acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-alumnos"></tbody>
+  </table>
+
+  <hr>
+
+  <script src="main.js"></script>
+</body>
+</html>
