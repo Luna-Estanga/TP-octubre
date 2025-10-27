@@ -12,12 +12,11 @@ function cargarCursos() {
                 select.append(option);
             }
         })
-        .catch(err => alert(err.stack));
+        .catch(err => console.error(err.stack));
 }
 
 
 cargarCursos();
-
 function cargarMaterias(e) {
     const cursoId = e.target.value;
     fetch('http://localhost:3000/api/materias/' + cursoId)
@@ -74,11 +73,11 @@ function cargarLista() {
       <td>${al.apellido}</td>
       <td>${al.nombre}</td>
       <td>
-        <button class="A" onclick="marcar(this, 'A')">A</button>
-        <button class="P" onclick="marcar(this, 'P')">P</button>
-        <button class="T" onclick="marcar(this, 'T')">T</button>
-        <button class="RA" onclick="marcar(this, 'RA')">RA</button>
-        <button class="AP" onclick="marcar(this, 'AP')">AP</button>
+      <button class="P" onclick="marcar(this, 'P')">P</button>
+      <button class="T" onclick="marcar(this, 'T')">T</button>
+      <button class="A" onclick="marcar(this, 'A')">A</button>
+      <button class="RA" onclick="marcar(this, 'RA')">RA</button>
+      <button class="AP" onclick="marcar(this, 'AP')">AP</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -93,9 +92,6 @@ function marcar(boton, tipo) {
   boton.style.opacity = '1';
 }
 
-function changeDate(event) {
-  console.log('Fecha seleccionada:', event.target.value);
-}
 function marcar(boton, tipo) {
   const fila = boton.closest('tr');
   const nombre = fila.children[2].textContent;
