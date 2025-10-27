@@ -1,22 +1,32 @@
-import express from 'express';
-import mysql from 'mysql';
-import cors from 'cors';
-import morgan from 'morgan';
+const express = require('express');
+const mysql = require('mysql');
+const cors = require('cors');
+const morgan = require('morgan');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Conexión con la base de datos MySQL
+// cnexión con la base de datos MySQL
 const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
     database: 'tp'
 });
-
-// GET: obtener asistencias por materia y fecha
+app.post('/api/alumnos', (req, res) => {
+    const { nombres, apellidos, curso } = req.body;
+    const insert = `
+        INSERT INTO alumnos (nombres, apellidos, curso)
+        VALUES (?, ?, ?)
+    `;
+    conn.query(insert, [nombres, apellidos, curso], (err) => {
+        if (err) return res.status(500).json({ error: err });
+        res.status(201).json({ msg: 'Alumno registrado correctamente' });
+    });
+})
+// obtener asistencias por materia y fecha
 app.get('/api/asistencias/:materia/:fecha', (req, res) => {
     const params = [req.params.materia, req.params.fecha];
     const q = `
