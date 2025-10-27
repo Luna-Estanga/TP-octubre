@@ -2,13 +2,13 @@
 CREATE DATABASE asistencia;
 USE asistencia;
 
--- Tbla e cursos
+-- tabla de cursos
 CREATE TABLE cursos (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(100) NOT NULL
+  nombre VARCHAR(100) NOT NULL,
 );
 
--- tbla de alumnos
+-- tabla de alumnos
 CREATE TABLE alumnos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
@@ -17,12 +17,12 @@ CREATE TABLE alumnos (
   FOREIGN KEY (curso_id) REFERENCES cursos(id)
 );
 
--- asistencias
+-- tabla de asistencias
 CREATE TABLE asistencias (
   id INT AUTO_INCREMENT PRIMARY KEY,
   alumno_id INT,
   tipo ENUM('A','P','T','RA','AP'),
-  hora TIME,
+  hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   fecha DATE DEFAULT (CURRENT_DATE),
   FOREIGN KEY (alumno_id) REFERENCES alumnos(id)
 );
