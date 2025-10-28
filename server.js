@@ -45,8 +45,84 @@ app.get('/api/asistencias/:materia/:fecha', (req, res) => {
         res.status(200).json(rs);
     });
 });
+app.get('/api/cursos', async (req, res) => {
+    try {
+      const [rows] = await pool.query('SELECT id, anio, division, especialidad FROM Cursos');
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: 'Error al obtener cursos', detalle: err.message });
+    }
+  });
+  
+app.get('/api/materias/:cursoId', async (req, res) => {
+    try {
+      const cursoId = req.params.cursoId;
+      const [rows] = await pool.query(
+        'SELECT id, nombre FROM Materias WHERE curso = ?',
+        [cursoId]
+      );
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: 'Error al obtener materias', detalle: err.message });
+    }
 
-// POST: registrar una nueva asistencia
+  });
+  app.get('/api/alumnos/:cursoId', async (req, res) => {
+    try {
+      const cursoId = req.params.cursoId;
+      const [rows] = await pool.query(
+        'SELECT id, nombre, apellido FROM Alumnos WHERE curso = ?',
+        [cursoId]
+      );
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ error: 'Error al obtener alumnos', detalle: err.message });
+    }
+  });
+  app.post('/api/asistencias', async (req, res) => {
+    const { tipo, alumno, materia } = req.body;
+  
+    if (!tipo || !alumno || !materia) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+  
+    try {
+      const tipoAbreviado = abreviarTipo(tipo);
+  
+      // Verificar si ya hay un registro hoy para ese alumno y materia
+      const [existentes] = await pool.query(
+        `SELECT id FROM Asistencias
+         WHERE alumno = ? AND materia = ?
+         AND DATE(creado) = CURDATE()`,
+        [alumno, materia]
+      );
+  
+      if (existentes.length > 0) {
+        return res.status(409).json({
+          error: 'Ya se registró asistencia para este alumno y materia hoy.'
+        });
+      }
+  
+      // Insertar si no existe
+      const [result] = await pool.query(
+        'INSERT INTO Asistencias (tipo, alumno, materia) VALUES (?, ?, ?)',
+        [tipoAbreviado, alumno, materia]
+      );
+  
+      res.status(201).json({
+        mensaje: 'Asistencia registrada con éxito',
+        asistencia: {
+          id: result.insertId,
+          tipo: tipoAbreviado,
+          alumno,
+          materia
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ error: 'Error al guardar asistencia', detalle: err.message });
+    }
+  });
+//registrar una nueva asistencia
 app.post('/api/asistencias', (req, res) => {
     const { tipo, alumno, materia } = req.body;
 
