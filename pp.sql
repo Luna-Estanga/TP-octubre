@@ -1,15 +1,15 @@
 -- crear base d datos
-CREATE DATABASE asistencia;
+CREATE DATABASE IF EXISTS asistencia;
 USE asistencia;
 
 -- tabla de cursos
-CREATE TABLE cursos (
+CREATE TABLE IF NOT EXISTS cursos (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(100) NOT NULL,
+  nombre VARCHAR(100) NOT NULL
 );
 
 -- tabla de alumnos
-CREATE TABLE alumnos (
+CREATE TABLE IF NOT EXISTS alumnos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50),
   apellido VARCHAR(50),
@@ -18,7 +18,7 @@ CREATE TABLE alumnos (
 );
 
 -- tabla de asistencias
-CREATE TABLE asistencias (
+CREATE TABLE IF NOT EXISTS asistencias (
   id INT AUTO_INCREMENT PRIMARY KEY,
   alumno_id INT,
   tipo ENUM('A','P','T','RA','AP'),
@@ -26,22 +26,3 @@ CREATE TABLE asistencias (
   fecha DATE DEFAULT (CURRENT_DATE),
   FOREIGN KEY (alumno_id) REFERENCES alumnos(id)
 );
-
--- cursos
-INSERT INTO cursos (nombre) VALUES 
-('4°3 Computación'),
-('4°4 Computación');
-
---  alumnos de 4°3 Computación
-INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
-('Yasmin', 'Luna Estanga', 1),
-('Santiago', 'Villarroel', 1),
-('Aramis', 'Perez', 1),
-('Fabricio', 'Jauregui', 1);
-
---  alumnos de 4°4 Computación
-INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
-('Lucas', 'Brem', 2),
-('Florencia', 'Gonzales', 2),
-('Bruno', 'Zapico', 2),
-('Ian', 'Gutierrez', 2);
