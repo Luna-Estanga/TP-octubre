@@ -49,11 +49,29 @@ function cargarAlumnos(cursoId) {
 
 
 const alumnos = [
-  { id: 1, nombre: 'Luna', apellido: 'Estanga' },
-  { id: 2, nombre: 'Santiago', apellido: 'Villarroel' },
-  { id: 3, nombre: 'Aramis', apellido: 'Hurtado' },
-  { id: 4, nombre: 'Fabrizio', apellido: 'Jauregui' }
+    // 4°3
+    { id: 1, nombre: 'Luna', apellido: 'Estanga', curso: '4°3' },
+    { id: 2, nombre: 'Santiago', apellido: 'Villarroel', curso: '4°3' },
+    { id: 3, nombre: 'Aramis', apellido: 'Hurtado', curso: '4°3' },
+    { id: 4, nombre: 'Fabrizio', apellido: 'Jauregui', curso: '4°3' },
+    { id: 5, nombre: 'Lucas', apellido: 'Brem', curso: '4°3' },
+    { id: 6, nombre: 'Florencia', apellido: 'Gonzales', curso: '4°3' },
+    { id: 7, nombre: 'Bruno', apellido: 'Zapico', curso: '4°3' },
+    { id: 8, nombre: 'Ian', apellido: 'Gutierrez', curso: '4°3' }
 ];
+
+function cargarMaterias(event) {
+    const curso = event.target.value;
+
+    const alumnosFiltrados = alumnos.filter(a => a.curso === curso);
+
+    mostrarAlumnos(alumnosFiltrados); 
+}
+
+const cursoSeleccionado = document.getElementById("cursos").value;
+const alumnosFiltrados = alumnos.filter(a => a.curso === cursoSeleccionado);
+
+
 
 function cargarLista() {
   const tbody = document.getElementById('tabla-alumnos');
@@ -146,6 +164,8 @@ function enviarAsistencia(tipo, alumnoId, materiaId) {
         .catch(err => alert('Error: ' + err.message));
 }
 
+// Cargar lista al inicio
+window.onload = crearListaConBotones;
 
   // Cambiar opacidad
   boton.parentElement.querySelectorAll('button').forEach(b => b.style.opacity = '0.4');
