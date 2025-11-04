@@ -164,12 +164,36 @@ function enviarAsistencia(tipo, alumnoId, materiaId) {
         .catch(err => alert('Error: ' + err.message));
 }
 
-// Cargar lista al inicio
-window.onload = crearListaConBotones;
+function changeDate(e){
+    let date = e.value;
+    let materia = select.value;
+    fetch('http://localhost:3000/api/asistencias/' + materia + '/' + date)
+    .then(res => res.json())
+    .then(lista => {
+let tbody = document.querySelector('.registro tbody');
+tbody.innerHTML = '';
+        for (let alumno of lista){
+            let tr = document.createElement('tr');
+            let orden = document.createElement('td');
+            let apellido = document.createElement('td');
+            let nombre = document.createElement('td'); 
+            let registro = document.createElement('td');   
+            let hi = document.createElement('td');  
+            let he = document.createElement('td');
+            if (alumno.tipo == 'T') hi.textContent = alumno.creado;  
+            orden.textContent = alumno.orden;
+            apellido.textContent = alumno.apellido; 
+            nombre.textContent = alumno.nombre;
+            registro.textContent = alumno.tipo;
+            tr.append(orden,apellido,nombre,registro,hi,he);
+            tbody.append(tr);
+        }
+    })
+}
 
-  // Cambiar opacidad
+}
   boton.parentElement.querySelectorAll('button').forEach(b => b.style.opacity = '0.4');
   boton.style.opacity = '1';
-}
-// Cargar lista al inicio
+  
 window.onload = cargarLista;
+
