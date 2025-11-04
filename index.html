@@ -18,8 +18,8 @@
     <select id="materias" name="materia" onchange="cargarLista(event)">
       <option value="">Seleccionar materia</option>
       <option value="Proyecto Informático">Proyecto Informático</option>
-      <option value="Algoritmos">Base de datos</option>
-      <option value="Base de datos">Algoritmos</option>
+      <option value="Base de datos">Base de datos</option>
+      <option value="Algoritmos">Algoritmos</option>
     </select>
   </div>
 
@@ -37,9 +37,31 @@
 
   <hr>
 
+ 
+  <div class="registro">
+    <input type="date" onchange="changeDate(event)">
+
+    <table>
+      <thead>
+        <tr>
+          <th>orden</th>
+          <th>apellido</th>
+          <th>nombre</th>
+          <th>registro</th>
+          <th>hora ingreso</th>
+          <th>hora egreso</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-registro"></tbody>
+    </table>
+  </div>
+
   <script src="main.js"></script>
 </body>
 </html>
+
+
+
 
 
 
