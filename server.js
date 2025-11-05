@@ -89,7 +89,7 @@ app.get('/api/materias/:cursoId', async (req, res) => {
     try {
       const tipoAbreviado = abreviarTipo(tipo);
   
-      // Verificar si ya hay un registro hoy para ese alumno y materia
+      
       const [existentes] = await pool.query(
         `SELECT id FROM Asistencias
          WHERE alumno = ? AND materia = ?
@@ -103,7 +103,6 @@ app.get('/api/materias/:cursoId', async (req, res) => {
         });
       }
   
-      // Insertar si no existe
       const [result] = await pool.query(
         'INSERT INTO Asistencias (tipo, alumno, materia) VALUES (?, ?, ?)',
         [tipoAbreviado, alumno, materia]
@@ -147,5 +146,4 @@ app.post('/api/asistencias', (req, res) => {
     });
 });
 
-// Iniciar servidor
 app.listen(3000, () => console.log('Servidor corriendo en http://localhost:3000'));
