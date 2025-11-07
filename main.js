@@ -46,115 +46,160 @@ function cargarAlumnos(cursoId) {
           }
       });
 }
-
-
+let registros = [];
 const alumnos = [
-    // 4°3
-    { id: 1, nombre: 'Luna', apellido: 'Estanga', curso: '4°3' },
+    //  '4°3' alumnbiriroersjnasdnaisd lloro
+    { id: 1, nombre: 'Luna', apellido: 'Estanga', curso: '4°3' }, 
     { id: 2, nombre: 'Santiago', apellido: 'Villarroel', curso: '4°3' },
     { id: 3, nombre: 'Aramis', apellido: 'Hurtado', curso: '4°3' },
     { id: 4, nombre: 'Fabrizio', apellido: 'Jauregui', curso: '4°3' },
     { id: 5, nombre: 'Lucas', apellido: 'Brem', curso: '4°3' },
     { id: 6, nombre: 'Florencia', apellido: 'Gonzales', curso: '4°3' },
     { id: 7, nombre: 'Bruno', apellido: 'Zapico', curso: '4°3' },
-    { id: 8, nombre: 'Ian', apellido: 'Gutierrez', curso: '4°3' }
+    { id: 8, nombre: 'Ian', apellido: 'Gutierrez', curso: '4°3' },
+    
+    // '4°4' aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaayuda quiero tomar coca
+    { id: 9, nombre: 'Micaela', apellido: 'Gómez', curso: '4°4' }, 
+    { id: 10, nombre: 'Elias', apellido: 'Pereyra', curso: '4°4' },
 ];
+function cargarLista(e) {
+    const materiaSeleccionada = e.target.value;
+    console.log("Materia seleccionada:", materiaSeleccionada);
+    registros = []; 
+    mostrarRegistros(); 
+    const selectCurso = document.querySelector('.cursos');
+    if (selectCurso && selectCurso.value) {
+        cargarAlumnos(selectCurso.value);
+    }
+}
+function manejarCambioCurso(event) {
+    const cursoSeleccionado = event.target.value;
+    registros = [];
+    mostrarRegistros(); 
+    
+    if (!cursoSeleccionado) {
+        document.getElementById("tabla-alumnos").innerHTML = "";
+        return;
+    }
+    cargarAlumnos(cursoSeleccionado);
+}
+function manejarCambioCurso(event) {
+    const cursoSeleccionado = event.target.value;
+    if (!cursoSeleccionado) {
+        document.getElementById("tabla-alumnos").innerHTML = "";
+        return;
+    }
+    cargarAlumnos(cursoSeleccionado);
+}
+function cargarAlumnos(cursoFiltro) {
+    const tbody = document.getElementById("tabla-alumnos");
+    if (!tbody) return;
+    const alumnosFiltrados = alumnos.filter(a => a.curso === cursoFiltro);
+    if (!cursoFiltro) {
+        tbody.innerHTML = "";
+        return;
+    }
+    tbody.innerHTML = ""; 
+    alumnosFiltrados.forEach((a) => {
+        const registroActual = registros.find(r => r.id === a.id);
+        const tipoActual = registroActual ? registroActual.tipo : '';
+        const getOpacity = (tipoBoton) => { 
+            if (registroActual && registroActual.tipo === tipoBoton) {
+                return '1';
+            }
+            if (registroActual && registroActual.tipo !== tipoBoton) {
+                return '0.4';
+            }
+            return '1'; 
+        };
+        
+        tbody.innerHTML += `
+            <tr data-alumno-id="${a.id}">
+                <td>${a.id}</td>
+                <td>${a.apellido}</td>
+                <td>${a.nombre}</td>
+                <td class="acciones"> 
+                    <button class="btn p-btn" 
+                        onclick="registrarAsistencia(${a.id}, 'P', this)" 
+                        style="opacity: ${getOpacity('P')}">P</button>
+                    <button class="btn t-btn" 
+                        onclick="registrarAsistencia(${a.id}, 'T', this)" 
+                        style="opacity: ${getOpacity('T')}">T</button>
+                    <button class="btn a-btn" 
+                        onclick="registrarAsistencia(${a.id}, 'A', this)" 
+                        style="opacity: ${getOpacity('A')}">A</button>
+                    <button class="btn ra-btn" 
+                        onclick="registrarAsistencia(${a.id}, 'RA', this)" 
+                        style="opacity: ${getOpacity('RA')}">RA</button>
+                    <button class="btn ap-btn" 
+                        onclick="registrarAsistencia(${a.id}, 'AP', this)" 
+                        style="opacity: ${getOpacity('AP')}">AP</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+function registrarAsistencia(id, tipo, boton) {
+    const alumno = alumnos.find(a => a.id === id);
+    if (!alumno) return;
+    const botones = boton.parentElement.querySelectorAll('button');
+    botones.forEach(b => b.style.opacity = '0.4');
+    boton.style.opacity = '1';
+    const existente = registros.find(r => r.id === id);
 
-function cargarMaterias(event) {
-    const curso = event.target.value;
-    const alumnosFiltrados = alumnos.filter(a => a.curso === curso);
-    mostrarAlumnos(alumnosFiltrados); 
+    if (existente) {
+        existente.tipo = tipo; 
+    } else {
+        registros.push({
+            id: alumno.id,
+            apellido: alumno.apellido,
+            nombre: alumno.nombre,
+            tipo: tipo,
+            horaIngreso: "",
+            horaEgreso: ""
+        });
+    }
+    mostrarRegistros();
+}
+function mostrarRegistros() {
+    const tbody = document.getElementById("tabla-registro");
+    tbody.innerHTML = ""; 
+
+    registros.forEach((r, i) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${r.apellido}</td>
+                <td>${r.nombre}</td>
+                <td>${r.tipo}</td>
+                <td><input type="time" value="${r.horaIngreso}" onchange="cambiarHora(${r.id}, this.value, 'ingreso')"></td>
+                <td><input type="time" value="${r.horaEgreso}" onchange="cambiarHora(${r.id}, this.value, 'egreso')"></td>
+                <td class="acciones">
+                    <button class="btn e-btn" onclick="editarRegistro(${r.id})">E</button>
+                    <button class="btn x-btn" onclick="eliminarRegistro(${r.id})">X</button>
+                </td>
+            </tr>
+        `;
+    });
 }
 
-const cursoSeleccionado = document.getElementById("cursos").value;
-const alumnosFiltrados = alumnos.filter(a => a.curso === cursoSeleccionado);
+function cambiarHora(id, valor, tipo) {
+    const registro = registros.find(r => r.id === id);
+    if (!registro) return;
+    if (tipo === "ingreso") registro.horaIngreso = valor;
+    if (tipo === "egreso") registro.horaEgreso = valor;
+}
 
-function cargarLista() {
-    const tbody = document.getElementById('tabla-alumnos');
-    tbody.innerHTML = '';
-  
-    alumnos.forEach(al => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${al.id}</td>
-        <td>${al.apellido}</td>
-        <td>${al.nombre}</td>
-        <td>
-          <button class="P" onclick="marcar(this, 'P')">P</button>
-          <button class="T" onclick="marcar(this, 'T')">T</button>
-          <button class="A" onclick="marcar(this, 'A')">A</button>
-          <button class="RA" onclick="marcar(this, 'RA')">RA</button>
-          <button class="AP" onclick="marcar(this, 'AP')">AP</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+function eliminarRegistro(id) {
+    registros = registros.filter(r => r.id !== id);
+    cargarAlumnos(document.querySelector('.cursos').value); 
+    mostrarRegistros();
+}
 
-  function marcar(boton, tipo) {
-    const fila = boton.closest('tr');
-    const nombre = fila.children[2].textContent;
-    console.log(`Alumno ${nombre} marcado como ${tipo}`);
-    boton.parentElement.querySelectorAll('button').forEach(b => b.style.opacity = '0.4');
-    boton.style.opacity = '1';
-
-    crearListaConBotones();
-  }
-  
-  function crearListaConBotones() {
-    const materiaId = document.querySelector('#materias').value;
-    const cursoId = document.querySelector('#cursos').value;
-    if (!materiaId || !cursoId) return;
-    fetch(`http://localhost:3000/api/alumnos/${cursoId}`)
-      .then(res => res.json())
-      .then(alumnos => {
-        const contenedor = document.querySelector('#lista-alumnos');
-        contenedor.innerHTML = ''; 
-        for (let alumno of alumnos) {
-          const fila = document.createElement('div');
-          fila.className = 'fila-alumno';
-          const nombre = document.createElement('span');
-          nombre.textContent = `${alumno.apellido}, ${alumno.nombre}`;
-          nombre.className = 'nombre-alumno';
-          const botones = document.createElement('div');
-          botones.className = 'botones-asistencia';
-          const tipos = ['Presente', 'Ausente', 'Tarde', 'Retiro Anticipado'];
-          for (let tipo of tipos) {
-            const boton = document.createElement('button');
-            boton.textContent = tipo;
-            boton.className = 'btn-asistencia';
-            boton.addEventListener('click', () => {
-              enviarAsistencia(tipo, alumno.id, materiaId);
-            });
-            botones.appendChild(boton);
-          }
-  
-          fila.appendChild(nombre);
-          fila.appendChild(botones);
-          contenedor.appendChild(fila);
-        }
-      })
-      .catch(err => console.error('Error al cargar los alumnos:', err));
-  }
-  
-  function enviarAsistencia(tipo, alumnoId, materiaId) {
-    const datos = { tipo, alumno: alumnoId, materia: materiaId };
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(datos),
-      headers: { 'Content-Type': 'application/json' }
-    };
-    fetch('http://localhost:3000/api/asistencias', options)
-      .then(res => res.json())
-      .then(data => alert(JSON.stringify(data, null, 2)))
-      .catch(err => alert('Error: ' + err.message));
-  }
-  
-window.onload = crearListaConBotones;
-
-  boton.parentElement.querySelectorAll('button').forEach(b => b.style.opacity = '0.4');
-  boton.style.opacity = '1';
-
-window.onload = cargarLista;
-
-
+function editarRegistro(id) {
+    alert("Editar registro de ID: " + id + ". Implementa tu lógica de edición aquí.");
+}
+window.onload = () => {
+    const tablaAlumnos = document.getElementById("tabla-alumnos");
+    if (tablaAlumnos) tablaAlumnos.innerHTML = "";
+};
