@@ -3,25 +3,21 @@ body {
   text-align: center;
   background: #f7f7f7;
 }
-
 h2 {
   background-color: #222;
   color: white;
   padding: 10px;
   border-radius: 10px;
 }
-
 table {
   margin: 20px auto;
   border-collapse: collapse;
   width: 80%;
 }
-
 th, td {
   border: 1px solid #ccc;
   padding: 8px;
 }
-
 button {
   margin: 2px;
   padding: 6px 8px;
@@ -31,9 +27,50 @@ button {
   color: white;
   font-weight: bold;
 }
+.btn {
+    border: none;
+    color: white; 
+    padding: 5px 8px;
+    margin: 1px;
+    cursor: pointer;
+    border-radius: 4px; 
+    font-weight: bold;
+    transition: opacity 0.2s; 
+}
+.p-btn {
+    background-color: #4CAF50; 
+}
+.t-btn {
+    background-color: #ff9800; 
+}
+.a-btn {
+    background-color: #f44336; 
+}
+.ra-btn {
+    background-color: #E91E63; 
+}
+.ap-btn {
+    background-color: #9C27B0; 
+}
+.btn {
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+}
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+.e-btn {
+  background-color: dodgerblue;
+}
+.x-btn {
+  background-color: crimson;
+}
 
-button.P { background: green; }
-button.A { background: red; }
-button.T { background: orange; }
-button.RA { background: pink; color: black; }
-button.AP { background: purple; }
+
