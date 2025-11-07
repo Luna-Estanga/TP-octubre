@@ -7,9 +7,8 @@
 </head>
 <body>
   <h2>TP Octubre | Lista de asistencia</h2>
-
   <div class="controls">
-    <select class="cursos" name="curso" onchange="cargarMaterias(event)">
+    <select class="cursos" name="curso" onchange="manejarCambioCurso(event)">
       <option value="">Seleccionar curso</option>
       <option value="4°3">4°3 Computación</option>
       <option value="4°4">4°4 Computación</option>
@@ -22,7 +21,6 @@
       <option value="Algoritmos">Algoritmos</option>
     </select>
   </div>
-
   <table>
     <thead>
       <tr>
@@ -34,10 +32,7 @@
     </thead>
     <tbody id="tabla-alumnos"></tbody>
   </table>
-
   <hr>
-
- 
   <div class="registro">
     <input type="date" onchange="changeDate(event)">
 
@@ -53,15 +48,20 @@
           <th>acciones</th>
         </tr>
       </thead>
-      <tbody id="tabla-registro"></tbody>
-    </table>
+  <tbody id="tabla-registro">
+  <tr>
+    <td><input type="time"></td>
+    <td><input type="time"></td>
+    <td class="acciones">
+      <button class="btn e-btn" onclick="editarRegistro(1)">E</button>
+      <button class="btn x-btn" onclick="eliminarRegistro(1)">X</button>
+    </td>
+  </tr>
+</tbody>
   </div>
-
   <script src="main.js"></script>
 </body>
 </html>
-
-
 
 
 
