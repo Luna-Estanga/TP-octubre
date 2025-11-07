@@ -1,4 +1,4 @@
--- cursos
+ -- loscursosssoososososososossadhjasdbkiaohugdboalsidhsau
 INSERT INTO cursos (nombre) VALUES 
 ('4°3 Computación'),
 ('4°4 Computación');
@@ -18,3 +18,4 @@ INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
 INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
 ('Gomez', 'Micaela', 1),
 ('Pereyra','Elias',2);
+
