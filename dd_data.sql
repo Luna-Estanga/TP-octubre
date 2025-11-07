@@ -16,5 +16,5 @@ INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
 
 --  alumnos de 4°4 Computación
 INSERT INTO alumnos (nombre, apellido, curso_id) VALUES
-
-
+('Gomez', 'Micaela', 1),
+('Pereyra','Elias',2);
