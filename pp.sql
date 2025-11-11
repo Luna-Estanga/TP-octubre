@@ -1,5 +1,6 @@
 -- crear base d datos
-CREATE DATABASE IF EXISTS asistencia;
+DROP DATABASE IF EXISTS asistencia;
+CREATE DATABASE IF NOT EXISTS asistencia;
 USE asistencia;
 
 -- tabla de cursos
