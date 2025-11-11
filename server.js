@@ -13,7 +13,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'tp'
+    database: 'asistencia'
 });
 app.post('/api/alumnos', (req, res) => {
     const { nombres, apellidos, curso } = req.body;
@@ -147,3 +147,4 @@ app.post('/api/asistencias', (req, res) => {
 });
 
 app.listen(3000, () => console.log('Servidor corriendo en http://localhost:3000'));
+
