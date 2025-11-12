@@ -1,205 +1,234 @@
-function cargarCursos() {
-    fetch('http://localhost:3000/api/cursos')
-        .then(res => res.json())
-        .then(data => {
-            const select = document.querySelector('#cursos');
-            select.innerHTML = '';
-            for (let curso of data) {
-                const option = document.createElement('option');
-                const { anio, division, esp } = curso;
-                option.textContent = `${anio} ${division} ${esp}`;
-                option.value = curso.id;
-                select.append(option);
-            }
-        })
-        .catch(err => console.error(err.stack));
-}
 
+async function cargarCursos() {
+  try {
+    const res = await fetch('http://localhost:3000/cursos');
+    const cursos = await res.json();
 
-cargarCursos();
-function cargarMaterias(e) {
-    const cursoId = e.target.value;
-    fetch('http://localhost:3000/api/materias/' + cursoId)
-        .then(res => res.json())
-        .then(data => {
-            const select = document.querySelector('#materias');
-            select.innerHTML = '';
-            for (let materia of data) {
-                const option = document.createElement('option');
-                option.textContent = materia.nombre;
-                select.append(option);
-            }
-        });
-}
-
-function cargarAlumnos(cursoId) {
-  fetch(`http://localhost:3000/api/alumnos/${cursoId}`)
-      .then(res => res.json())
-      .then(data => {
-          const select = document.querySelector('#alumnos');
-          select.innerHTML = '<option value="">Seleccione un alumno</option>';
-          for (let alumno of data) {
-              const option = document.createElement('option');
-              option.textContent = `${alumno.apellido}, ${alumno.nombre}`;
-              option.value = alumno.id;
-              select.append(option);
-          }
+    const selects = ['selectCurso', 'filtroCurso', 'consultaCurso'];
+    selects.forEach(id => {
+      const select = document.getElementById(id);
+      select.innerHTML = '<option value="">Seleccione</option>';
+      cursos.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.anio}-${c.division} ${c.esp}</option>`;
       });
-}
-let registros = [];
-const alumnos = [
-    //  '4°3' alumnbiriroersjnasdnaisd lloro
-    { id: 1, nombre: 'Luna', apellido: 'Estanga', curso: '4°3' }, 
-    { id: 2, nombre: 'Santiago', apellido: 'Villarroel', curso: '4°3' },
-    { id: 3, nombre: 'Aramis', apellido: 'Hurtado', curso: '4°3' },
-    { id: 4, nombre: 'Fabrizio', apellido: 'Jauregui', curso: '4°3' },
-    { id: 5, nombre: 'Lucas', apellido: 'Brem', curso: '4°3' },
-    { id: 6, nombre: 'Florencia', apellido: 'Gonzales', curso: '4°3' },
-    { id: 7, nombre: 'Bruno', apellido: 'Zapico', curso: '4°3' },
-    { id: 8, nombre: 'Ian', apellido: 'Gutierrez', curso: '4°3' },
-    
-    // '4°4' aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaayuda quiero tomar coca
-    { id: 9, nombre: 'Micaela', apellido: 'Gómez', curso: '4°4' }, 
-    { id: 10, nombre: 'Elias', apellido: 'Pereyra', curso: '4°4' },
-];
-function cargarLista(e) {
-    const materiaSeleccionada = e.target.value;
-    console.log("Materia seleccionada:", materiaSeleccionada);
-    registros = []; 
-    mostrarRegistros(); 
-    const selectCurso = document.querySelector('.cursos');
-    if (selectCurso && selectCurso.value) {
-        cargarAlumnos(selectCurso.value);
-    }
-}
-function manejarCambioCurso(event) {
-    const cursoSeleccionado = event.target.value;
-    registros = [];
-    mostrarRegistros(); 
-    
-    if (!cursoSeleccionado) {
-        document.getElementById("tabla-alumnos").innerHTML = "";
-        return;
-    }
-    cargarAlumnos(cursoSeleccionado);
-}
-function manejarCambioCurso(event) {
-    const cursoSeleccionado = event.target.value;
-    if (!cursoSeleccionado) {
-        document.getElementById("tabla-alumnos").innerHTML = "";
-        return;
-    }
-    cargarAlumnos(cursoSeleccionado);
-}
-function cargarAlumnos(cursoFiltro) {
-    const tbody = document.getElementById("tabla-alumnos");
-    if (!tbody) return;
-    const alumnosFiltrados = alumnos.filter(a => a.curso === cursoFiltro);
-    if (!cursoFiltro) {
-        tbody.innerHTML = "";
-        return;
-    }
-    tbody.innerHTML = ""; 
-    alumnosFiltrados.forEach((a) => {
-        const registroActual = registros.find(r => r.id === a.id);
-        const tipoActual = registroActual ? registroActual.tipo : '';
-        const getOpacity = (tipoBoton) => { 
-            if (registroActual && registroActual.tipo === tipoBoton) {
-                return '1';
-            }
-            if (registroActual && registroActual.tipo !== tipoBoton) {
-                return '0.4';
-            }
-            return '1'; 
-        };
-        
-        tbody.innerHTML += `
-            <tr data-alumno-id="${a.id}">
-                <td>${a.id}</td>
-                <td>${a.apellido}</td>
-                <td>${a.nombre}</td>
-                <td class="acciones"> 
-                    <button class="btn p-btn" 
-                        onclick="registrarAsistencia(${a.id}, 'P', this)" 
-                        style="opacity: ${getOpacity('P')}">P</button>
-                    <button class="btn t-btn" 
-                        onclick="registrarAsistencia(${a.id}, 'T', this)" 
-                        style="opacity: ${getOpacity('T')}">T</button>
-                    <button class="btn a-btn" 
-                        onclick="registrarAsistencia(${a.id}, 'A', this)" 
-                        style="opacity: ${getOpacity('A')}">A</button>
-                    <button class="btn ra-btn" 
-                        onclick="registrarAsistencia(${a.id}, 'RA', this)" 
-                        style="opacity: ${getOpacity('RA')}">RA</button>
-                    <button class="btn ap-btn" 
-                        onclick="registrarAsistencia(${a.id}, 'AP', this)" 
-                        style="opacity: ${getOpacity('AP')}">AP</button>
-                </td>
-            </tr>
-        `;
     });
+  } catch (error) {
+    console.error('Error al cargar cursos:', error);
+  }
 }
-function registrarAsistencia(id, tipo, boton) {
-    const alumno = alumnos.find(a => a.id === id);
-    if (!alumno) return;
-    const botones = boton.parentElement.querySelectorAll('button');
-    botones.forEach(b => b.style.opacity = '0.4');
-    boton.style.opacity = '1';
-    const existente = registros.find(r => r.id === id);
 
-    if (existente) {
-        existente.tipo = tipo; 
+
+async function crearAlumno() {
+  const nombres = document.getElementById('nombre').value.trim();
+  const apellidos = document.getElementById('apellido').value.trim();
+  const curso = document.getElementById('selectCurso').value;
+
+  if (!nombres || !apellidos || !curso) return alert('Complete todos los campos');
+
+  try {
+    await fetch('http://localhost:3000/alumnos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombres, apellidos, curso })
+    });
+    alert('Alumno creado correctamente');
+  } catch (error) {
+    console.error('Error al crear alumno:', error);
+  }
+}
+
+
+async function cargarMateriasYAlumnos(cursoId) {
+  const materiaSelect = document.getElementById('filtroMateria');
+  const lista = document.getElementById('listaAlumnos');
+
+  if (!cursoId) {
+    materiaSelect.disabled = true;
+    lista.innerHTML = '';
+    return;
+  }
+
+  try {
+    // matriass 
+    const resMat = await fetch(`http://localhost:3000/materias/${cursoId}`);
+    const materias = await resMat.json();
+    materiaSelect.innerHTML = '<option value="">Seleccione</option>';
+    materias.forEach(m => {
+      materiaSelect.innerHTML += `<option value="${m.id}">${m.nombre}</option>`;
+    });
+    materiaSelect.disabled = false;
+
+    // alumnos :p
+    const resAl = await fetch(`http://localhost:3000/alumnos/${cursoId}`);
+    const alumnos = await resAl.json();
+
+    lista.innerHTML = '';
+   alumnos.forEach(a => {
+  const div = document.createElement('div');
+  div.innerHTML = `
+    <span>${a.nombres} ${a.apellidos}</span>
+    <div class="botones-asistencia">
+      <button class="estado" data-alumno="${a.id}" data-tipo="P">P</button>
+      <button class="estado" data-alumno="${a.id}" data-tipo="T">T</button>
+      <button class="estado" data-alumno="${a.id}" data-tipo="A">A</button>
+      <button class="estado" data-alumno="${a.id}" data-tipo="RA">RA</button>
+      <button class="estado" data-alumno="${a.id}" data-tipo="PA">PA</button>
+    </div>
+  `;
+  lista.appendChild(div);
+});
+
+
+    lista.querySelectorAll('button.estado').forEach(btn => {
+      btn.addEventListener('click', () => registrarAsistencia(btn));
+    });
+  } catch (error) {
+    console.error('Error al cargar materias o alumnos:', error);
+  }
+}
+
+
+async function registrarAsistencia(btn) {
+  const alumno = btn.dataset.alumno;
+  const tipo = btn.dataset.tipo;
+  const materia = document.getElementById('filtroMateria').value;
+
+  if (!materia) return alert('Seleccione materia');
+
+  try {
+    await fetch('http://localhost:3000/asistencias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ alumno, materia, tipo })
+    });
+    alert('Asistencia registrada');
+    btn.parentNode.querySelectorAll('button.estado').forEach(b => b.disabled = true);
+  } catch (error) {
+    console.error('Error al registrar asistencia:', error);
+  }
+}
+
+
+async function consultarAsistencias() {
+  const curso = document.getElementById('consultaCurso').value;
+  const materia = document.getElementById('consultaMateria').value;
+  const fecha = document.getElementById('fechaFiltro').value;
+
+  if (!curso || !materia || !fecha) return alert('Complete todos los filtros');
+
+  try {
+    const res = await fetch(`http://localhost:3000/asistencias?curso=${curso}&materia=${materia}&fecha=${fecha}`);
+    const registros = await res.json();
+    renderAsistencias(registros);
+  } catch (error) {
+    console.error('Error al consultar asistencias:', error);
+  }
+}
+
+
+async function cargarMateriasConsulta(cursoId) {
+  const materiaSelect = document.getElementById('consultaMateria');
+  if (!cursoId) {
+    materiaSelect.disabled = true;
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3000/materias/${cursoId}`);
+    const materias = await res.json();
+    materiaSelect.innerHTML = '<option value="">Seleccione</option>';
+    materias.forEach(m => materiaSelect.innerHTML += `<option value="${m.id}">${m.nombre}</option>`);
+    materiaSelect.disabled = false;
+  } catch (error) {
+    console.error('Error al cargar materias:', error);
+  }
+}
+
+
+function renderAsistencias(asistencias) {
+  const tbody = document.querySelector('#tablaAsistencias tbody');
+  tbody.innerHTML = '';
+  asistencias.forEach(a => {
+    const fila = document.createElement('tr');
+  fila.innerHTML = `
+  <td>${a.id}</td>
+  <td>${a.alumno_id}</td>
+  <td>${a.nombres}</td>
+  <td>${a.apellido}</td>
+  <td>${a.tipo}</td>
+  <td>${a.hora_ingreso || '-'}</td>
+  <td>${a.hora_egreso || '-'}</td>
+  <td>${a.fecha}</td>
+  <td>
+    <button class="editar" onclick="editarAsistencia(${a.id})">Editar</button>
+    <button class="eliminar" onclick="eliminarAsistencia(${a.id})">Eliminar</button>
+  </td>
+`;
+
+    tbody.appendChild(fila);
+  });
+}
+
+
+async function editarAsistencia(id) {
+  try {
+    const tipo = prompt('Ingrese nuevo tipo (A, P, T, RA, PA):');
+    if (!tipo) return alert('Edición cancelada.');
+
+    let hora_ingreso = null;
+    let hora_egreso = null;
+
+    if (tipo === 'T' || tipo === 'PA') {
+      hora_ingreso = prompt('Ingrese hora de ingreso (HH:MM):', obtenerHoraActual());
+    } else if (tipo === 'RA') {
+      hora_egreso = prompt('Ingrese hora de egreso (HH:MM):', obtenerHoraActual());
+    }
+
+    const res = await fetch(`http://localhost:3000/asistencias/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tipo, hora_ingreso, hora_egreso })
+    });
+
+    if (res.ok) {
+      alert('Asistencia actualizada correctamente.');
+      consultarAsistencias();
     } else {
-        registros.push({
-            id: alumno.id,
-            apellido: alumno.apellido,
-            nombre: alumno.nombre,
-            tipo: tipo,
-            horaIngreso: "",
-            horaEgreso: ""
-        });
+      alert('Error al actualizar la asistencia.');
     }
-    mostrarRegistros();
-}
-function mostrarRegistros() {
-    const tbody = document.getElementById("tabla-registro");
-    tbody.innerHTML = ""; 
-
-    registros.forEach((r, i) => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${i + 1}</td>
-                <td>${r.apellido}</td>
-                <td>${r.nombre}</td>
-                <td>${r.tipo}</td>
-                <td><input type="time" value="${r.horaIngreso}" onchange="cambiarHora(${r.id}, this.value, 'ingreso')"></td>
-                <td><input type="time" value="${r.horaEgreso}" onchange="cambiarHora(${r.id}, this.value, 'egreso')"></td>
-                <td class="acciones">
-                    <button class="btn e-btn" onclick="editarRegistro(${r.id})">E</button>
-                    <button class="btn x-btn" onclick="eliminarRegistro(${r.id})">X</button>
-                </td>
-            </tr>
-        `;
-    });
+  } catch (error) {
+    console.error('Error al editar asistencia:', error);
+  }
 }
 
-function cambiarHora(id, valor, tipo) {
-    const registro = registros.find(r => r.id === id);
-    if (!registro) return;
-    if (tipo === "ingreso") registro.horaIngreso = valor;
-    if (tipo === "egreso") registro.horaEgreso = valor;
+async function eliminarAsistencia(id) {
+  try {
+    const confirmar = confirm('¿Seguro que desea eliminar este registro?');
+    if (!confirmar) return;
+
+    const res = await fetch(`http://localhost:3000/asistencias/${id}`, { method: 'DELETE' });
+
+    if (res.ok) {
+      alert('Registro eliminado correctamente.');
+      consultarAsistencias();
+    } else {
+      alert('Error al eliminar el registro.');
+    }
+  } catch (error) {
+    console.error('Error al eliminar asistencia:', error);
+  }
 }
 
-function eliminarRegistro(id) {
-    registros = registros.filter(r => r.id !== id);
-    cargarAlumnos(document.querySelector('.cursos').value); 
-    mostrarRegistros();
+function obtenerHoraActual() {
+  const ahora = new Date();
+  const horas = String(ahora.getHours()).padStart(2, '0');
+  const minutos = String(ahora.getMinutes()).padStart(2, '0');
+  return `${horas}:${minutos}`;
 }
 
-function editarRegistro(id) {
-    alert("Editar registro de ID: " + id + ". Implementa tu lógica de edición aquí.");
-}
-window.onload = () => {
-    const tablaAlumnos = document.getElementById("tabla-alumnos");
-    if (tablaAlumnos) tablaAlumnos.innerHTML = "";
-};
+
+document.addEventListener('DOMContentLoaded', cargarCursos);
+document.getElementById('btnCrearAlumno').addEventListener('click', crearAlumno);
+document.getElementById('filtroCurso').addEventListener('change', e => cargarMateriasYAlumnos(e.target.value));
+document.getElementById('consultaCurso').addEventListener('change', e => cargarMateriasConsulta(e.target.value));
+document.getElementById('btnConsultar').addEventListener('click', consultarAsistencias);
