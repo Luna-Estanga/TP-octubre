@@ -13,7 +13,6 @@ section {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ===== Inputs y Select ===== */
 input[type="text"], input[type="date"], select {
   padding: 10px;
   margin: 5px 0;
@@ -59,14 +58,13 @@ button:not(.estado):not(.editar):not(.eliminar):hover {
   color: #fff;
 }
 
-/* Colores según tipo */
+
 button[data-tipo="P"] { background-color: #28a745; }
 button[data-tipo="T"] { background-color: #17a2b8; }
 button[data-tipo="A"] { background-color: #dc3545; }
 button[data-tipo="RA"] { background-color: #ffc107; color: #000; }
 button[data-tipo="PA"] { background-color: #6c757d; }
 
-/* ===== Tabla de Consultas ===== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -84,7 +82,7 @@ th {
   background-color: #e0e0e0;
 }
 
-/* ===== Botones Editar y Eliminar ===== */
+
 button.editar {
   background-color: #0069d9;
   color: #fff;
