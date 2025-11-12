@@ -1,76 +1,54 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Proyecto Informático - 4°3 Computación</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistencias Alumnos</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>TP Octubre | Lista de asistencia</h2>
-  <div class="controls">
-    <select class="cursos" name="curso" onchange="manejarCambioCurso(event)">
-      <option value="">Seleccionar curso</option>
-      <!-- 
-      <option value="4°3">4°3 Computación</option>
-      <option value="4°4">4°4 Computación</option>
-    -->
-    </select>
+<h1>Gestión de Asistencias</h1>
 
-    <select id="materias" name="materia" onchange="cargarLista(event)">
-      <option value="">Seleccionar materia</option>
-      <!--
-      <option value="Proyecto Informático">Proyecto Informático</option>
-      <option value="Base de datos">Base de datos</option>
-      <option value="Algoritmos">Algoritmos</option>
-    -->
-    </select>
-  </div>
-  <table>
+<section id="crear-alumno">
+  <h2>Crear Alumno</h2>
+  <input type="text" id="nombre" placeholder="Nombre">
+  <input type="text" id="apellido" placeholder="Apellido">
+  <select id="selectCurso"></select>
+  <button id="btnCrearAlumno">Crear</button>
+</section>
+
+<section id="registrar-asistencia">
+  <h2>Registrar Asistencia</h2>
+  <select id="filtroCurso"></select>
+  <select id="filtroMateria" disabled></select>
+  <div id="listaAlumnos"></div>
+</section>
+
+<section id="consultar-fecha">
+  <h2>Consultar Asistencias</h2>
+  <input type="date" id="fechaFiltro">
+  <select id="consultaCurso"></select>
+  <select id="consultaMateria" disabled></select>
+  <button id="btnConsultar">Consultar</button>
+
+  <table id="tablaAsistencias">
     <thead>
       <tr>
-        <th>id</th>
-        <th>apellido</th>
-        <th>nombre</th>
-        <th>acciones</th>
+        <th>ID Registro</th>
+        <th>ID Alumno</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Tipo</th>
+        <th>Hora Ingreso</th>
+        <th>Hora Egreso</th>
+        <th>Acciones</th>
       </tr>
     </thead>
-    <tbody id="tabla-alumnos"></tbody>
+    <tbody></tbody>
   </table>
-  <hr>
-  <div class="registro">
-    <input type="date" onchange="changeDate(event)">
+</section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>orden</th>
-          <th>apellido</th>
-          <th>nombre</th>
-          <th>registro</th>
-          <th>hora ingreso</th>
-          <th>hora egreso</th>
-          <th>acciones</th>
-        </tr>
-      </thead>
-  <tbody id="tabla-registro">
-  <tr>
-    <td><input type="time"></td>
-    <td><input type="time"></td>
-    <td class="acciones">
-      <button class="btn e-btn" onclick="editarRegistro(1)">E</button>
-      <button class="btn x-btn" onclick="eliminarRegistro(1)">X</button>
-    </td>
-  </tr>
-</tbody>
-  </div>
-  <script src="main.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
