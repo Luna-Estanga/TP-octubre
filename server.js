@@ -1,3 +1,4 @@
+
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
@@ -8,143 +9,150 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// cnexión con la base de datos MySQL
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'asistencia'
-});
-app.post('/api/alumnos', (req, res) => {
-    const { nombres, apellidos, curso } = req.body;
-    const insert = `
-        INSERT INTO alumnos (nombres, apellidos, curso)
-        VALUES (?, ?, ?)
-    `;
-    conn.query(insert, [nombres, apellidos, curso], (err) => {
-        if (err) return res.status(500).json({ error: err });
-        res.status(201).json({ msg: 'Alumno registrado correctamente' });
-    });
-})
-// obtener asistencias por materia y fecha
-app.get('/api/asistencias/:materia/:fecha', (req, res) => {
-    const params = [req.params.materia, req.params.fecha];
-    const q = `
-        SELECT a.apellidos, a.nombres, tipo, TIME(creado) AS creado
-        FROM registros r
-        JOIN alumnos a ON a.id = r.alumno
-        WHERE materia = ? AND DATE(creado) = ?
-    `;
-    
-    conn.query(q, params, (err, rs) => {
-        if (err) return res.status(500).json({ error: err });
-        let i = 1;
-        for (let r of rs) {
-            r.orden = i++;
-        }
-        res.status(200).json(rs);
-    });
-});
-app.get('/api/cursos', async (req, res) => {
-    try {
-      const [rows] = await pool.query('SELECT id, anio, division, especialidad FROM Cursos');
-      res.json(rows);
-    } catch (err) {
-      res.status(500).json({ error: 'Error al obtener cursos', detalle: err.message });
-    }
-  });
-  
-app.get('/api/materias/:cursoId', async (req, res) => {
-    try {
-      const cursoId = req.params.cursoId;
-      const [rows] = await pool.query(
-        'SELECT id, nombre FROM Materias WHERE curso = ?',
-        [cursoId]
-      );
-      res.json(rows);
-    } catch (err) {
-      res.status(500).json({ error: 'Error al obtener materias', detalle: err.message });
-    }
-
-  });
-  app.get('/api/alumnos/:cursoId', async (req, res) => {
-    try {
-      const cursoId = req.params.cursoId;
-      const [rows] = await pool.query(
-        'SELECT id, nombre, apellido FROM Alumnos WHERE curso = ?',
-        [cursoId]
-      );
-      res.json(rows);
-    } catch (err) {
-      res.status(500).json({ error: 'Error al obtener alumnos', detalle: err.message });
-    }
-  });
-  app.post('/api/asistencias', async (req, res) => {
-    const { tipo, alumno, materia } = req.body;
-  
-    if (!tipo || !alumno || !materia) {
-      return res.status(400).json({ error: 'Faltan datos requeridos' });
-    }
-  
-    try {
-      const tipoAbreviado = abreviarTipo(tipo);
-  
-      
-      const [existentes] = await pool.query(
-        `SELECT id FROM Asistencias
-         WHERE alumno = ? AND materia = ?
-         AND DATE(creado) = CURDATE()`,
-        [alumno, materia]
-      );
-  
-      if (existentes.length > 0) {
-        return res.status(409).json({
-          error: 'Ya se registró asistencia para este alumno y materia hoy.'
-        });
-      }
-  
-      const [result] = await pool.query(
-        'INSERT INTO Asistencias (tipo, alumno, materia) VALUES (?, ?, ?)',
-        [tipoAbreviado, alumno, materia]
-      );
-  
-      res.status(201).json({
-        mensaje: 'Asistencia registrada con éxito',
-        asistencia: {
-          id: result.insertId,
-          tipo: tipoAbreviado,
-          alumno,
-          materia
-        }
-      });
-    } catch (err) {
-      res.status(500).json({ error: 'Error al guardar asistencia', detalle: err.message });
-    }
-  });
-//registrar una nueva asistencia
-app.post('/api/asistencias', (req, res) => {
-    const { tipo, alumno, materia } = req.body;
-
-    const check = `
-        SELECT * FROM registros 
-        WHERE alumno = ? AND materia = ? 
-        AND DATE(creado) = CURDATE()
-    `;
-    conn.query(check, [alumno, materia], (err, rs) => {
-        if (err) return res.status(500).json({ error: err });
-        if (rs.length > 0)
-            return res.status(400).json({ msg: 'No se puede registrar dos veces el mismo día' });
-
-        const insert = `
-            INSERT INTO registros (tipo, alumno, materia)
-            VALUES (?, ?, ?)
-        `;
-        conn.query(insert, [tipo, alumno, materia], (err2) => {
-            if (err2) return res.status(500).json({ error: err2 });
-            res.status(201).json({ msg: 'Asistencia registrada correctamente' });
-        });
-    });
+// conexion MySQL
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'tp'
 });
 
-app.listen(3000, () => console.log('Servidor corriendo en http://localhost:3000'));
+const path = require('path');
+
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.get('/', (req, res) => {
+  res.send('Servidor funcionando correctamente ✅');
+});
+
+
+db.connect(err => {
+  if (err) throw err;
+  console.log('Conectado a la base de datos');
+});
+
+
+app.get('/cursos', (req, res) => {
+  db.query('SELECT * FROM cursos', (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+
+app.get('/materias/:cursoId', (req, res) => {
+  const { cursoId } = req.params;
+  db.query('SELECT * FROM materias WHERE curso = ?', [cursoId], (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+
+app.get('/alumnos/:cursoId', (req, res) => {
+  const { cursoId } = req.params;
+  db.query('SELECT * FROM alumnos WHERE curso = ?', [cursoId], (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+
+app.post('/alumnos', (req, res) => {
+  const { nombres, apellidos, curso } = req.body;
+  if (!nombres || !apellidos || !curso)
+    return res.status(400).json({ message: 'Faltan datos' });
+
+  db.query(
+    'INSERT INTO alumnos (nombres, apellidos, curso) VALUES (?, ?, ?)',
+    [nombres, apellidos, curso],
+    (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.json({ id: result.insertId });
+    }
+  );
+});
+
+
+app.post('/asistencias', (req, res) => {
+  const { alumno, materia, tipo } = req.body;
+  if (!alumno || !materia || !tipo)
+    return res.status(400).json({ message: 'Faltan datos' });
+
+  const now = new Date();
+  const hora = now.toTimeString().split(' ')[0];
+
+  let hora_ingreso = null;
+  let hora_egreso = null;
+
+  if (tipo === 'T' || tipo === 'PA') hora_ingreso = hora;
+  if (tipo === 'RA') hora_egreso = hora;
+
+  db.query(
+    `INSERT INTO registros (alumno, materia, tipo, hora_ingreso, hora_egreso, creado)
+     VALUES (?, ?, ?, ?, ?, NOW())`,
+    [alumno, materia, tipo, hora_ingreso, hora_egreso],
+    (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.json({ id: result.insertId });
+    }
+  );
+});
+
+
+app.get('/asistencias', (req, res) => {
+  const { curso, materia, fecha } = req.query;
+
+  if (!curso || !materia || !fecha)
+    return res.status(400).json({ message: 'Faltan filtros' });
+
+  db.query(
+    `SELECT r.id, a.id AS alumno_id, a.nombres, a.apellidos, r.tipo, 
+            r.hora_ingreso, r.hora_egreso, DATE(r.creado) AS fecha
+     FROM registros r
+     JOIN alumnos a ON r.alumno = a.id
+     WHERE a.curso = ? AND r.materia = ? AND DATE(r.creado) = ?`,
+    [curso, materia, fecha],
+    (err, results) => {
+      if (err) return res.status(500).send(err);
+      res.json(results);
+    }
+  );
+});
+
+
+app.put('/asistencias/:id', (req, res) => {
+  const { id } = req.params;
+  const { tipo, hora_ingreso, hora_egreso } = req.body;
+  if (!tipo)
+    return res.status(400).json({ message: 'Faltan datos para actualizar' });
+
+  db.query(
+    `UPDATE registros
+     SET tipo = ?, hora_ingreso = ?, hora_egreso = ?
+     WHERE id = ?`,
+    [tipo, hora_ingreso, hora_egreso, id],
+    (err) => {
+      if (err) return res.status(500).send(err);
+      res.json({ message: 'Registro actualizado correctamente' });
+    }
+  );
+});
+
+
+app.delete('/asistencias/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM registros WHERE id = ?', [id], (err) => {
+    if (err) return res.status(500).send(err);
+    res.json({ message: 'Registro eliminado correctamente' });
+  });
+});
+
+
+app.listen(3000, () => {
+  console.log('Servidor corriendo en http://localhost:3000');
+});
+
 
